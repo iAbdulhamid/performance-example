@@ -12,6 +12,11 @@ function delay(duration) {
 }
 
 app.get('/', (req, res) => {
+    // real life blocking functions...
+    // JSON.stringify({}) => "{}"
+    // JSON.parse("{}") => {}
+    // [5,1,2,3,4].sort()
+    
     res.send('Node.js performance example');
 });
 
