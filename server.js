@@ -1,7 +1,8 @@
 const express = require('express');
+const cluster = require('cluster');
+const os      = require('os');
 
 const app = express();
-
 
 function delay(duration) {
     const startTime = Date.now();
@@ -17,12 +18,22 @@ app.get('/', (req, res) => {
     // JSON.parse("{}") => {}
     // [5,1,2,3,4].sort()
     
-    res.send('Node.js performance example');
+    res.send(`Node.js performance example: ${process.pid}`);
 });
 
 app.get('/timer', (req, res) => {
+    console.log(`${process.pid}`);
     delay(10000);
-    res.send('Ding ding ding!');
+    res.send(`Ding ding ding! ${process.pid}`);
 });
 
-app.listen(3000);
+if (cluster.isMaster) {
+    console.log(`Master has been started...${process.pid}`);
+    const NUM_OF_WORKERS = os.cpus().length;
+    for (let i = 0; i < NUM_OF_WORKERS; i++) {
+        cluster.fork();
+    }
+} else {
+    console.log(`Worker process started...${process.pid}`);
+    app.listen(3000);
+}
